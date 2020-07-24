@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+
 estaciones = {"humanes":"estefania",
-				"vallecas": "estefania",
+				"vallecas madrid i": "estefania",
 				"arganda": "estefania",
 				"tres cantos": "estefania",
 				"la nucia": "javier",
 				"san javier": "alberto",
 				"alcala de henares": "estefania",
 				"alcantarilla": "alberto",
-				"elche": "javier",
-				"rosales": "estefania",
+				"elche i": "javier",
+				"rosales madrid ii": "estefania",
 				"vera": "alberto",
 				"san juan": "javier",
 				"san vicente": "javier",
@@ -23,22 +25,23 @@ estaciones = {"humanes":"estefania",
 				"nijar": "alberto",
 				"fuenlabrada iii": "estefania",
 				"collado villalba": "estefania",
-				"bellavista": "alberto",
+				"bellavista sevilla i": "alberto",
 				"olivares": "alberto",
 				"san lorenzo": "estefania",
 				"villalba": "estefania",
 				"hellin": "javier",
-				"almeria 1": "alberto",
+				"almeria i": "alberto",
 				"tomelloso": "javier",
 				"huercal": "alberto",
 				"la solana": "javier",
-				"patraix": "javier",
+				"patraix valencia i": "javier",
 				"javea": "javier",
 				"vicar":"alberto",
 				"elche ii":"javier",
 				"guadarrama":"estefania",
 				"villarrobledo":"javier",
-				"pirotecnia":"estefania"}
+				"pirotecnia madrid iii":"estefania",
+				"albacete":"javier"}
 				
 llamadas = ["expendedor", "cliente", "CRA", "coordinador"]
 
@@ -57,20 +60,25 @@ resoluciones = ["apertura manual","toma de datos",
 
 bools = ["si","no"]
 
-correos= {"estefania":"diamond.pruebas.plenoil@gmail.com",
-		"alberto":"diamond.pruebas.plenoil@gmail.com",
-		"javier":"diamond.pruebas.plenoil@gmail.com"}
+correos= {"estefania":"estefania.ruiz@plenoil.es",
+		"alberto":"alberto.sanchez@plenoil.es",
+		"javier":"javier.garcia@plenoil.es"}
+
+
+copyFECHA = datetime(2020,7,19) ##Fecha para limpiar
+copyTOestefania = ["la solana","tomelloso","villarrobledo","albacete","hellin"]
+copyTOalberto = ["santa pola","elche i","elche ii","aspe","san vicente","san juan","la nucia","javea","patraix valencia i"]
+copyTOjavier = []
 		
-correoSALA = "diamond.pruebas.plenoil@gmail.com"
-#correoSALA = "cra@diamondseguridad.com"
+correoSALA = "marcos.rus@diamondseguridad.com"
 
 		
 excelSHEETS = {"estefania": 0,
 			"javier": 2,
 			"alberto": 1}
 			
-excelNAME = "Incidencias Plenoil.xlsx"
-#excelNAME = "C:\\Users\\diamond\\Documents\\INCIDENCIAS PLENOIL.xlsx"
+
+excelNAME = "\\\\192.168.102.5\\t. de noche\\EXCEL PLENOIL\\INCIDENCIAS PLENOIL.xlsx"
 		
 senderCONFIG = {"server": "mailserver01.aspl.es",
 				"port": 25,

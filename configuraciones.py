@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime
+
 estaciones = {"humanes":"estefania",
-				"vallecas": "estefania",
+				"vallecas madrid i": "estefania",
 				"arganda": "estefania",
 				"tres cantos": "estefania",
 				"la nucia": "javier",
 				"san javier": "alberto",
 				"alcala de henares": "estefania",
 				"alcantarilla": "alberto",
-				"elche": "javier",
-				"rosales": "estefania",
+				"elche i": "javier",
+				"rosales madrid ii": "estefania",
 				"vera": "alberto",
 				"san juan": "javier",
 				"san vicente": "javier",
@@ -23,45 +25,58 @@ estaciones = {"humanes":"estefania",
 				"nijar": "alberto",
 				"fuenlabrada iii": "estefania",
 				"collado villalba": "estefania",
-				"bellavista": "alberto",
+				"bellavista sevilla i": "alberto",
 				"olivares": "alberto",
 				"san lorenzo": "estefania",
 				"villalba": "estefania",
 				"hellin": "javier",
-				"almeria 1": "alberto",
+				"almeria i": "alberto",
 				"tomelloso": "javier",
 				"huercal": "alberto",
 				"la solana": "javier",
-				"patraix": "javier",
+				"patraix valencia i": "javier",
 				"javea": "javier",
 				"vicar":"alberto",
 				"elche ii":"javier",
 				"guadarrama":"estefania",
 				"villarrobledo":"javier",
-				"pirotecnia":"estefania"}
+				"pirotecnia madrid iii":"estefania",
+				"albacete":"javier",
+				"guadalajara":"estefania"}
 				
-llamadas = {"expendedor", "cliente", "CRA", "coordinador"}
+llamadas = ["expendedor", "cliente", "CRA", "coordinador"]
 
-incidencias = {"bloqueo surtidor", "atasco billetero", "impresion ticket/factura",
-				"parada de emergencia", "repostaje incompleto", "revelado cheque",
-				"hoja de reclamaciones", "predeterminado grupo", "pruebas cronometradas",
+incidencias = ["cheque", "mantenimiento",
+			"cobro duplicado", "fallo comunicacion",
+			"billetero", "fallo iluminacion", "accidente/emergencia",
+			"varios"]
+
+incidenciasOLD = ["bloqueo surtidor", "atasco billetero", "impresion ticket/factura",
+				"parada de emergencia", "revelado cheque",
+				"hoja de reclamaciones", "predeterminado grupo",
 				"pruebas domotica", "fallo de comunicaciones", "problemas tecnicos",
-				"billete no leido. Incidencia localizada en el log", "billete no leido. Incidencia NO localizada",
-				"cheque caducado",
-               "otra incidencia"}
+				"billete no leido. Incidencia NO localizada",
+				"cheque caducado", "otras"]
                
-resoluciones = {"apertura manual","toma de datos",
+resoluciones = ["apertura manual","toma de datos",
 				"cheque revelado","impreso desde cra","responsable/expendedor informado",
-				"pasado aviso a servicio tecnico", "estacion rearmada",
-				"otra resolucion"}
+				"pasado aviso a servicio tecnico", "estacion rearmada", "cajon abierto", "se realizan pruebas domoticas",
+				"NO se realiza apertura","otras"]
 
-bools = {"si","no"}
+bools = ["si","no"]
 
 correos= {"estefania":"estefania.ruiz@plenoil.es",
 		"alberto":"alberto.sanchez@plenoil.es",
 		"javier":"javier.garcia@plenoil.es"}
+
+
+copyFECHA = datetime(2020,8,12) ##Fecha para limpiar
+copyTOestefania=["bellavista sevilla i","olivares"]
+copyTOalberto=[""]
+copyTOjavier=["alcantarilla", "san javier", "huercal", "vera", "cuevas de almanzora", "nijar", "almeria i", "vicar"]
 		
-correoSALA = "marcos.rus@diamondseguridad.com"
+correoMARCOS = "marcos.rus@diamondseguridad.com"
+correoSALA = "cra@diamondseguridad.com"
 
 		
 excelSHEETS = {"estefania": 0,
@@ -69,7 +84,7 @@ excelSHEETS = {"estefania": 0,
 			"alberto": 1}
 			
 
-excelNAME = "C:\\Users\\diamond\\Documents\\INCIDENCIAS PLENOIL.xlsx"
+excelNAME = "\\\\192.168.102.5\\t. de noche\\EXCEL PLENOIL\\INCIDENCIAS PLENOIL.xlsx"
 		
 senderCONFIG = {"server": "mailserver01.aspl.es",
 				"port": 25,
