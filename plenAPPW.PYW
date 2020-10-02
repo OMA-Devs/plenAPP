@@ -50,16 +50,16 @@ class Aplicacion():
 	def __init__(self):
 		''' Creación de la interfaz y todas sus variables asociadas'''
 		self.raiz = Tk()
-		self.raiz.geometry('')		#La línea de geometría sin definir ningún tamaño hace que la interfaz sea autoadaptable. 	
+		self.raiz.geometry('') 		#La línea de geometría sin definir ningún tamaño hace que la interfaz sea autoadaptable.
 		self.fontTITLE = Font(size = 30)
 		self.font = Font(size = 16)
 		buttStyle = ttk.Style()
 		buttStyle.configure("size.TButton", font = ("Helvetica",16))
 		self.raiz.configure(bg = 'white')
 		self.raiz.title('Incidencias plenoil')
-		self.status = None			#Esta variable sirve para determinar si se ha elegido SI o NO en llamada, para evitar que los operadores la lien.
-		self.stationName = "" 		#Variable necesaria al automatizar la eleccion de estación.
-		self.adjunto = None 		#Variable que almacena el archivo adjunto
+		self.status = None	#Esta variable sirve para determinar si se ha elegido SI o NO en llamada, para evitar que los operadores la lien.
+		self.stationName = "" #Variable necesaria al automatizar la eleccion de estación.
+		self.adjunto = None #Variable que almacena el archivo adjunto
 		##################
 		##LOGOS y TITULO##
 		##################
@@ -100,6 +100,8 @@ class Aplicacion():
 		self.incidenciaVAR.set("cheque")
 		self.incidenciaMENU = OptionMenu(self.raiz, self.incidenciaVAR, *incidencias)
 		self.incidenciaMENU.config(font = self.font)
+		self.incidenciaOTRO = ttk.Entry(self.raiz)
+		self.incidenciaVAR.trace("w", self.checkOTRO)
 		########################
 		##SECCION "RESOLUCION"##
 		########################
@@ -107,7 +109,9 @@ class Aplicacion():
 		self.resolucionVAR = StringVar(self.raiz)
 		self.resolucionVAR.set("apertura manual")
 		self.resolucionMENU = OptionMenu(self.raiz, self.resolucionVAR, *resoluciones)
-		self.resolucionMENU.config(font = self.font)      
+		self.resolucionMENU.config(font = self.font)
+		self.resolucionOTRO = ttk.Entry(self.raiz)
+		self.resolucionVAR.trace("w", self.checkOTRO)       
 		#########################
 		##SECCION "SOLUCIONADO"##
 		#########################
@@ -196,8 +200,10 @@ class Aplicacion():
 		self.DEllamadaMENU.grid_forget()
 		self.incidenciaLABEL.grid_forget()
 		self.incidenciaMENU.grid_forget()
+		self.incidenciaOTRO.grid_forget()
 		self.resolucionLABEL.grid_forget()
 		self.resolucionMENU.grid_forget()
+		self.resolucionOTRO.grid_forget()
 		self.solucionLABEL.grid_forget()
 		self.solucionMENU.grid_forget()
 		self.tlfLABEL.grid_forget()
@@ -209,6 +215,20 @@ class Aplicacion():
 		##IMPORTANTE, determinacion de la variable STATUS.
 		self.status = False
 		messagebox.showinfo("NO HAY LLAMADA","PULSA ADJUNTAR Y ENVIAR")
+	def checkOTRO(self, *args):
+		'''Función que muestra cuadros de texto cuando se selecciona "otro"
+		en incidencias o resoluciones. Se hace para poder especificar incidencias
+		fuera de las listas predefinidas.'''
+		if args[0] == "PY_VAR1": ##Esto podría cambiar si se modifica la interfaz
+			if self.incidenciaVAR.get() == "otra incidencia":
+				self.incidenciaOTRO.grid(column = 0, row = 5, columnspan =2)
+			else:
+				self.incidenciaOTRO.grid_forget()
+		elif args[0] == "PY_VAR2": ##Esto podria cambiar si se modifica la interfaz
+			if self.resolucionVAR.get() == "otra resolucion":
+				self.resolucionOTRO.grid(column = 5, row = 5, columnspan =2)
+			else:
+				self.resolucionOTRO.grid_forget()
 	def checkEstacionNAME(self):
 		'''Función de control. Extra el nombre del archivo adjunto y lo 
 		compara con la lista de estaciones definida en "configuraciones.py".'''
@@ -227,6 +247,8 @@ class Aplicacion():
 				print("Mensaje en copia a ALBERTO")
 			elif self.stationName in copyTOjavier:
 				print("Mensaje en copia a JAVIER")
+			elif self.stationName in copyTOpatricia:
+				print("Mensaje en copia a PATRICIA")
 			else:
 				print("Mensaje SIN copia")
 			return True
@@ -234,10 +256,6 @@ class Aplicacion():
 			print("Estación no esta en el listado")
 			return False
 	def calculateTIME(self):
-		'''Calcula el tiempo aproximado de gestion de la incidencia leyendo
-		la hora de generacion y la del ultimo tramite. Este campo no se 
-		auto añade porque no todas las incidencias requieren el tiempo y
-		muchas veces se gestionan en un marco de tiempo muy diferente del real.'''
 		file_data = parser.from_file(self.adjunto.name)
 		text = file_data['content']
 		tPrint = ""
@@ -343,6 +361,9 @@ class Aplicacion():
 		elif self.stationName in copyTOjavier:
 			message['To'] = correos[estaciones[self.stationName]]+","+correoMARCOS+","+correoSALA+","+correos["javier"]
 			print("Mensaje en copia a ESTEFANIA")
+		elif self.stationName in copyTOpatricia:
+			message['To'] = correos[estaciones[self.stationName]]+","+correoMARCOS+","+correoSALA+","+correos["patricia"]
+			print("Mensaje en copia a PATRICIA")
 		else:
 			message['To'] = correos[estaciones[self.stationName]]+","+correoMARCOS+","+correoSALA
 			print("Mensaje SIN copia")
@@ -368,6 +389,8 @@ class Aplicacion():
 				server.sendmail(message['From'], [message['To'],correoMARCOS,correoSALA,correos["alberto"]], message.as_string())
 			elif self.stationName in copyTOjavier:
 				server.sendmail(message['From'], [message['To'],correoMARCOS,correoSALA,correos["javier"]], message.as_string())
+			elif self.stationName in copyTOpatricia:
+				server.sendmail(message['From'], [message['To'],correoMARCOS,correoSALA,correos["patricia"]], message.as_string())
 			else:
 				server.sendmail(message['From'], [message['To'],correoMARCOS,correoSALA], message.as_string())
 			print('Email Enviado')			
@@ -383,8 +406,8 @@ class Aplicacion():
 		self.adjunto = filedialog.askopenfile(initialdir="\\\\192.168.102.5\\t. de noche", parent=self.raiz,mode='rb',title='Examinar...')
 		self.incNAME["text"] = self.adjunto.name.split("/")[-1]
 		self.tiempoAPROX["text"] = self.calculateTIME()
+		self.checkEstacionNAME()
 	def sendIncidencia(self):
-		'''Envia la incidencia y modifica el excel, si corresponde. '''
 		if self.adjunto == None:
 			messagebox.showerror("ERROR","NO HAY INCIDENCIA ADJUNTA")
 		else:
@@ -411,6 +434,9 @@ class Aplicacion():
 						elif self.stationName in copyTOjavier:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
 												+correos[coord]+ ",javier.garcia@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+						elif self.stationName in copyTOpatricia:
+							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
+												+correos[coord]+ ",patricia.ferreiro@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
 						else:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
 												+correos[coord]+", "+correoMARCOS+" Y "+correoSALA)
@@ -431,6 +457,9 @@ class Aplicacion():
 					elif self.stationName in copyTOjavier:
 						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
 											+correos[coord]+ ",javier.garcia@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+					elif self.stationName in copyTOpatricia:
+						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
+											+correos[coord]+ ",patricia.ferreiro@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
 					else:
 						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
 											+correos[coord]+", "+correoMARCOS+" Y "+correoSALA)
@@ -624,6 +653,7 @@ class configActions():
 			copyTOalberto = []
 			copyTOestefania = []
 			copyTOjavier = []
+			copyTOpatricia = []
 			copyFECHA = None
 			print("Limpiando copias")
 	def readConfig():
@@ -649,6 +679,9 @@ class configActions():
 			conf.write(line)
 			#print(line)
 		conf.close()
+
+def incidenceChecker():
+	pass
 
 def main():
 	#flux = plenFLUX()
