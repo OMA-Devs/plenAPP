@@ -16,17 +16,20 @@ Todo este proceso ha ayudado a la CRA a reducir los tiempos de trámites y la ta
 	1. Es IMPORTANTE marcar la opcion "añadir PATH" en la instalación al principio. Esta opcion se muestra en la parte inferior de la pantalla de instalación.
 2. Instalar [Java SDK](https://www.oracle.com/java/technologies/javase-downloads.html)
 3. Instalar [odbc Driver](https://www.microsoft.com/en-us/download/details.aspx?id=56567)
+4. En powershell:
+	1. pip3 install pyodbc
 
 ## Solo LINUX (debian Based)
 1. Instalar java SDK.
-	2. sudo apt-get install default-jdk
+	1. sudo apt-get install default-jdk
+2. Instalar odbc.
+	1. sudo apt-get install python3-pyodbc
 
 ## Pasos de instalación genéricos
 1. pip3 install Pillow
 2. pip3 install openpyxl
 3. pip3 install tika
 	1. Tika no va a funcionar si el SDK de Java no está instalado. Mucho cuidado.
-4. pip3 install pyodbc
 
 # Usuarios de Diamond
 La ruta del ejecutable de python es:
