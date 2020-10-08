@@ -21,7 +21,6 @@ from tkinter import ttk
 #Archivos de configuracion y modulos personalizados.
 from configuraciones import *
 #from configDEBUG import *
-from plenFLUX import plenFLUX
 
 #Utilizado solo para mostrar los logos.
 from PIL import Image, ImageTk
