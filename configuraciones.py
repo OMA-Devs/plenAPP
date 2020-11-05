@@ -5,17 +5,11 @@ from datetime import datetime
 	
 llamadas = ["expendedor", "cliente", "CRA", "coordinador"]
 
-incidencias = ["cheque", "mantenimiento",
+incidencias = ["cheque", "mantenimiento", "surtidor equivocado",
 			"cobro duplicado", "fallo comunicacion",
 			"billetero", "fallo iluminacion", "accidente/emergencia",
 			"varios"]
 
-incidenciasOLD = ["bloqueo surtidor", "atasco billetero", "impresion ticket/factura",
-				"parada de emergencia", "revelado cheque",
-				"hoja de reclamaciones", "predeterminado grupo",
-				"pruebas domotica", "fallo de comunicaciones", "problemas tecnicos",
-				"billete no leido. Incidencia NO localizada",
-				"cheque caducado", "otras"]
                
 resoluciones = ["apertura manual","toma de datos",
 				"cheque revelado","impreso desde cra","responsable/expendedor informado",
@@ -24,7 +18,7 @@ resoluciones = ["apertura manual","toma de datos",
 
 bools = ["si","no"]
 
-copyFECHA = datetime(2020,9,25) ##Fecha para limpiar
+#copyFECHA = datetime(2020,9,25) ##Fecha para limpiar
 copyTOestefania=[]
 copyTOalberto=[]
 copyTOjavier=[]
@@ -45,7 +39,7 @@ excelNAME = "\\\\192.168.102.5\\t. de noche\\EXCEL PLENOIL\\INCIDENCIAS PLENOIL.
 senderCONFIG = {"server": "mailserver01.aspl.es",
 				"port": 25,
 				"user": "cra@diamondseguridad.com",
-				"pass": "912453"}
+				"pass": "d1am0nd%2453"}
 
 '''senderCONFIG = {"server": "smtp.gmail.com",
 				"port": 465,
