@@ -26,3 +26,5 @@ requiere modificaciones en el proceso de envío de correos y ha sido eliminada.
 
 La aplicacion plenAPP saca una consola de debug que informa de procesos y errores durante este.
 La aplicacion plenAPPw no muestra esa consola de debug
+
+cAMBIOS
