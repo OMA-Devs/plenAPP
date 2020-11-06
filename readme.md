@@ -2,7 +2,6 @@ Lo primero es instalar python3.7. Es IMPORTANTE marcar la opcion "añadir PATH" 
 Esta opcion se muestra en la parte inferior de la pantalla de instalación.
 
 Antes de utilizar el programa, hay que instalar varios modulos diferentes.
-Estos modulos se instalarán desde la carpeta "dependencias"
 
 pip3 install Pillow
 pip3 install openpyxl
@@ -12,7 +11,9 @@ Instalar controlador SQL desde:
 
 https://docs.microsoft.com/es-es/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15#download-for-windows
 
-Tras esto, se debe instalar Java SDK, localizado en la carpeta "dependencias" también:
+Tras esto, se debe instalar Java SDK
+Tambien requiere GIT para funcionar.
+Tras instalar Java SDK, ejecutar:
 
 pip3 install tika
 

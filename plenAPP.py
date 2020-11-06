@@ -45,13 +45,24 @@ from email.encoders import encode_base64
 from tika import parser
 import re
 
+#Logging
+import logging
+
+#SQLITE FALLBACK
+import sqlite3
+
 #SQL Lib and config
 import pyodbc
-server = '192.168.102.202' 
-database = '_Datos' 
-username = 'david' 
-password = 'dgc1991' 
-cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password)
+try:
+	server = '192.168.102.202' 
+	database = '_Datos' 
+	username = 'david' 
+	password = 'dgc1991' 
+	cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password, timeout=1)
+except pyodbc.InterfaceError:
+	print("SQL DRIVER NO ENCONTRADO, FALLBACK TO SQLITE LOCAL")
+except pyodbc.OperationalError:
+	print("SQL SERVER INALCANZABLE, FALLBACK TO SQLITE LOCAL")
 cursor = cnxn.cursor()
 
 '''Obtener el listado de estaciones del servidor
