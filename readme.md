@@ -11,8 +11,10 @@ Instalar controlador SQL desde:
 
 https://docs.microsoft.com/es-es/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver15#download-for-windows
 
-Tras esto, se debe instalar Java SDK
+Tras esto, se debe instalar Java SDK.
+
 Tambien requiere GIT para funcionar.
+
 Tras instalar Java SDK, ejecutar:
 
 pip3 install tika
@@ -26,5 +28,3 @@ requiere modificaciones en el proceso de envío de correos y ha sido eliminada.
 
 La aplicacion plenAPP saca una consola de debug que informa de procesos y errores durante este.
 La aplicacion plenAPPw no muestra esa consola de debug
-
-cAMBIOS
