@@ -23,7 +23,7 @@ from tkinter import ttk
 
 #Archivos de configuracion y modulos personalizados.
 from configuraciones import *
-from localDB import DB
+from localDB-stable import DB
 
 #Utilizado solo para mostrar los logos.
 from PIL import Image, ImageTk

@@ -48,7 +48,22 @@ import re
 
 #Logging
 import logging
-logging.basicConfig(level = logging.INFO)
+
+#OS. Para lectura y movimiento de PDF dentro del sistema
+import os
+
+def incLIST():
+	dirPDF = [""]
+	for f in os.listdir("\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA"):
+		if f[-4:] == ".pdf":
+			dirPDF.append(f)
+	return dirPDF
+
+def moveFile(fName):
+	initDir = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA"
+	tarDir = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA\\ENVIADOS"
+	os.replace(initDir+"\\"+fName, tarDir+"\\"+fName)
+
 
 estaciones = DB().estaciones
 
@@ -92,6 +107,12 @@ class Aplicacion():
 		self.adjBUTTON = ttk.Button(self.raiz, text="ADJUNTAR",
 										command=self.adjuntar, style = "size.TButton")
 		self.incNAME = ttk.Label(self.raiz, text="", font = self.font)
+		########################
+		##SECCION "DESPLEGABLE INCIDENCIAS"##
+		########################
+		self.incVAR = StringVar(self.raiz)
+		self.incMENU = OptionMenu(self.raiz, self.incVAR, *incLIST(), command=self.adjuntar)        
+		self.incMENU.config(font = self.font) 
 		########################
 		##SECCION "LLAMADA DE"##
 		########################
@@ -149,11 +170,13 @@ class Aplicacion():
 		self.callLABEL.grid(column = 2, row = 1, columnspan = 3)
 		self.yesBUTTON.grid(column = 2, row = 2, pady = 20)
 		self.noBUTTON.grid(column = 4, row = 2, pady = 20)
-		self.adjBUTTON.grid(column=1, row = 11, columnspan = 3, pady = 20)
-		self.sendBUTTON.grid(column=3, row = 11, columnspan = 3, pady = 20)
-		self.incNAME.grid(column = 2, row = 12, columnspan = 3, pady = 20)
+		#self.adjBUTTON.grid(column=1, row = 11, columnspan = 3, pady = 20)
+		self.incMENU.grid(column=2, row = 11, columnspan = 3, pady = 20)
+		self.sendBUTTON.grid(column=2, row = 12, columnspan = 3, pady = 20)
+		self.incNAME.grid(column = 2, row = 13, columnspan = 3, pady = 20)
 		##INICIO DEL BUCLE PRINCIPAL##
 		#configActions.checkCopyFECHA()
+		self.raiz.after(2000, self.eraseIncMENU)
 		self.raiz.mainloop()
 	def showCALL(self):
 		'''Esta función crea la interfaz necesaria para rellenar una incidencia en excel'''
@@ -201,7 +224,7 @@ class Aplicacion():
 		self.tiempoVAR.grid_forget()
 		##IMPORTANTE, determinacion de la variable STATUS.
 		self.status = False
-		messagebox.showinfo("NO HAY LLAMADA","PULSA ADJUNTAR Y ENVIAR")
+		messagebox.showinfo("NO HAY LLAMADA","ELIGE INCIDENCIA Y PULSA ENVIAR")
 	def checkEstacionNAME(self):
 		'''Función de control. Extrae el nombre del archivo adjunto y lo 
 		compara con la lista de estaciones definida en "configuraciones.py".'''
@@ -314,12 +337,22 @@ class Aplicacion():
 			,self.DEllamadaVAR.get().upper(),inci, reso,self.solucionVAR.get().upper()
 			,self.tlfVAR.get().upper(),self.obsVAR.get().upper(),anulado,numCHEQUE
 			,self.tiempoVAR.get()]
+	def updateIncMENU(self):
+		self.incVAR.set("")
+		self.incNAME["text"] = ""
+		self.incMENU = OptionMenu(self.raiz, self.incVAR, *incLIST(), command=self.adjuntar)
+	def eraseIncMENU(self):
+		self.incMENU.grid_forget()
+		self.incMENU = OptionMenu(self.raiz, self.incVAR, *incLIST(), command=self.adjuntar)
+		self.raiz.after(2000, self.eraseIncMENU)
+		self.incMENU.grid(column=2, row = 11, columnspan = 3, pady = 20)
 	def sendMail(self):
 		'''Proceso para enviar el correo con la incidencia a los coordinadores
 		correspondientes. Genera el correo electrónico y adjunta el archivo
 		elegido.'''
-		nameIND = self.adjunto.name.rfind("/")
-		name = self.adjunto.name[nameIND+1: -4]
+		#nameIND = self.adjunto.name.rfind("/")
+		#name = self.adjunto.name[nameIND+1: -4]
+		name = self.adjunto.name.split("\\")[-1]
 		#subject = name
 		message = MIMEMultipart()
 
@@ -374,12 +407,14 @@ class Aplicacion():
 		except:
 			print('Algo ha ocurrido. EMAIL NO ENVIADO')
 			messagebox.showerror("ERROR","NO SE HA ENVIADO EL EMAIL")
-	def adjuntar(self):
+	def adjuntar(self, fName):
 		'''Proceso básico que une todas las funciones anteriores. Hace todas
 		las comprobaciones necesarias para asegurar que la incidencia se
 		escribe donde corresponde y se envia a quien corresponde.'''
-		self.adjunto = filedialog.askopenfile(initialdir="\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA", parent=self.raiz,mode='rb',title='Examinar...')
-		self.incNAME["text"] = self.adjunto.name.split("/")[-1]
+		initDIR = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA"
+		self.adjunto = open(initDIR+"\\"+fName, "rb")
+		#self.adjunto = filedialog.askopenfile(initialdir=initDIR, parent=self.raiz,mode='rb',title='Examinar...')
+		self.incNAME["text"] = self.adjunto.name.split("\\")[-1]
 		self.tiempoAPROX["text"] = self.calculateTIME()
 		self.checkEstacionNAME()
 	def sendIncidencia(self):
@@ -400,6 +435,9 @@ class Aplicacion():
 						ws.append(row)
 						wb.save(excelNAME)
 						self.sendMail()
+						self.adjunto.close()
+						moveFile(self.adjunto.name.split("\\")[-1])
+						self.updateIncMENU()
 						if self.stationName in copyTOestefania:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
 												+estaciones[self.stationName].correo+ ",estefania.ruiz@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
@@ -422,6 +460,9 @@ class Aplicacion():
 			elif self.status == False:
 				if self.checkEstacionNAME() == True:
 					self.sendMail()
+					self.adjunto.close()
+					moveFile(self.adjunto.name.split("\\")[-1])
+					self.updateIncMENU()
 					coord = estaciones[self.stationName].responsable.lower()
 					if self.stationName in copyTOestefania:
 						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
