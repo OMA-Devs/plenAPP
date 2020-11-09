@@ -23,6 +23,7 @@ from tkinter import ttk
 
 #Archivos de configuracion y modulos personalizados.
 from configuraciones import *
+from localDB import DB
 
 #Utilizado solo para mostrar los logos.
 from PIL import Image, ImageTk
@@ -48,82 +49,7 @@ import re
 #Logging
 import logging
 
-#SQLITE FALLBACK
-import sqlite3
-
-#SQL Lib and config
-import pyodbc
-try:
-	server = '192.168.102.202' 
-	database = '_Datos' 
-	username = 'david' 
-	password = 'dgc1991' 
-	cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+ password, timeout=1)
-except pyodbc.InterfaceError:
-	print("SQL DRIVER NO ENCONTRADO, FALLBACK TO SQLITE LOCAL")
-except pyodbc.OperationalError:
-	print("SQL SERVER INALCANZABLE, FALLBACK TO SQLITE LOCAL")
-cursor = cnxn.cursor()
-
-'''Obtener el listado de estaciones del servidor
-arg curs: instancia de cursor SQL
-return abonados: diccionario compuesto de listas.
-    Clave: cue_iid (convertida a STR)
-    Contenido = lista con todos los datos del abonado'''
-def getEstaciones(curs):
-    abonados = {}
-    abCount = 0
-
-    curs.execute("SELECT * FROM [m_cuentas] where cue_clinea = 'OIL'") 
-    row = curs.fetchone() 
-    while row:
-        abonados[str(row[0])] = row 
-        row = curs.fetchone()
-        abCount = abCount +1
-    print("Numero de cuentas OIL: "+str(abCount))
-    #for ind,key in enumerate(abonados):
-        #print(abonados[key])
-    return abonados
-
-
-class Estacion:
-    def setResponsableMail(self):
-        for i in self.data:
-            try:
-                if type(i) == str:
-                    splitted = i.split("\n")
-                    for line in splitted:
-                        if "RESPONSABLE" in line:
-                            splitLine = line.split(": ")
-                            halfLine = splitLine[1].split(" (")
-                            self.responsable = halfLine[0].split(" ")[0]
-                            self.correo = halfLine[1].split(") ")[0].lower()
-                            #print(self.responsable)
-                            #print(self.correo)
-            except AttributeError:
-                pass
-    def setName(self):
-        fullname = self.data[3]
-        if "9999" in fullname or "3709" in fullname or "INSTALANDO" in fullname:
-            self.name = fullname
-        else:
-            halfName = fullname.split(" - ")[1]
-            self.name = halfName.split(" (")[0]
-        #print(self.name)
-    def __init__(self, data):
-        self.data = data
-        self.nombre = ""
-        self.responsable = ""
-        self.correo = ""
-        self.setName()
-        self.setResponsableMail()
-
-abonados = getEstaciones(cursor)
-estaciones = {}
-for key,item in enumerate(abonados):
-	ab = Estacion(abonados[item])
-	estaciones[ab.name] = ab
-	#print(ab.name)
+estaciones = DB().estaciones
 
 class Aplicacion():
 	''' Clase monolitica que encapsula la interfaz y las funciones necesarias para su
