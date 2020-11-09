@@ -61,7 +61,7 @@ def incLIST():
 
 def moveFile(fName):
 	initDir = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA"
-	tarDir = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA\\ENVIADOS"
+	tarDir = "\\\\192.168.102.5\\t. de noche\\EXCEL PLENOIL\\plenapp\\ENVIADOS"
 	os.replace(initDir+"\\"+fName, tarDir+"\\"+fName)
 
 
@@ -344,8 +344,8 @@ class Aplicacion():
 	def eraseIncMENU(self):
 		self.incMENU.grid_forget()
 		self.incMENU = OptionMenu(self.raiz, self.incVAR, *incLIST(), command=self.adjuntar)
-		self.raiz.after(2000, self.eraseIncMENU)
 		self.incMENU.grid(column=2, row = 11, columnspan = 3, pady = 20)
+		self.raiz.after(2000, self.eraseIncMENU)
 	def sendMail(self):
 		'''Proceso para enviar el correo con la incidencia a los coordinadores
 		correspondientes. Genera el correo electrónico y adjunta el archivo
