@@ -106,10 +106,6 @@ class Estacion:
 				self.name = halfName.split(" (")[0]
 		#print(self.name)
 	def __init__(self, data):
-		print("CREANDO ESTACION")
-		print("> NOMBRE: "+str(data[0]))
-		print("> RESP: "+str(data[1]))
-		print("> CORREO: "+str(data[2]))
 		self.data = data
 		self.name = ""
 		self.responsable = "NO"
