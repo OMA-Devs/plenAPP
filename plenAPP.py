@@ -48,6 +48,7 @@ import re
 
 #Logging
 import logging
+logging.basicConfig(level = logging.INFO)
 
 estaciones = DB().estaciones
 
