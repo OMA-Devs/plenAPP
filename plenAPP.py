@@ -200,7 +200,6 @@ class Aplicacion():
 		##DISPOSICION "TIEMPO DE RESOLUCION"
 		self.tiempoLABEL.grid(column = 2, row = 8, columnspan = 3)
 		self.tiempoVAR.grid(column = 2, row = 10, columnspan = 3)
-		self.tiempoAPROX.grid(column = 2, row = 9, columnspan = 3)
 		##Determinación de la variable STATUS
 		self.status = True
 	def showNOCALL(self):

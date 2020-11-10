@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+#from datetime import datetime
 	
 llamadas = ["expendedor", "cliente", "CRA", "coordinador"]
 
