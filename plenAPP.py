@@ -163,7 +163,6 @@ class Aplicacion():
 		##################################
 		self.tiempoLABEL = ttk.Label(self.raiz, text="TIEMPO DE RESOLUCION", font = self.font)
 		self.tiempoVAR = ttk.Entry(self.raiz)
-		self.tiempoAPROX = ttk.Label(self.raiz, text="", font = self.font)
 		####################################
 		##DISPOSICION INTERFAZ BASICA FIJA##
 		####################################
@@ -251,53 +250,6 @@ class Aplicacion():
 		except KeyError:
 			print("Estación no esta en el listado")
 			return False
-	def calculateTIME(self):
-		file_data = parser.from_file(self.adjunto.name)
-		text = file_data['content']
-		tPrint = ""
-		dPrint = ""
-		datetimeArray = []
-		for line in text.split("\n"):
-			if line is not "":
-				if tPrint == "":
-					hora = re.search(r'\d\d:\d\d:\d\d',line)
-					try:
-						tPrint = hora.group()[:-3]
-					except AttributeError:
-						pass
-				if dPrint == "":
-					fecha = re.search(r'\d\d/\d\d/\d\d\d\d',line)
-					try:
-						dPrint = fecha.group()
-					except AttributeError:
-						pass
-				if line[0] == "[":
-					fecha = line[1:11].split("/")
-					#print(fecha)
-					hora = line[12:17].split(":")
-					#print(hora)
-					for i in range(len(fecha)):
-						fecha[i] = int(fecha[i])
-					for i in range(len(hora)):
-						hora[i] = int(hora[i])
-					dat = datetime(fecha[2],fecha[1],fecha[0],hora[0],hora[1])
-					datetimeArray.append(dat)
-		startD = dPrint.split("/")
-		startT = tPrint.split(":")
-		##ESTE BLOQUE AVISA LA INSERCION DE UN PDF EN EL QUE NO SE PUEDE EXTRAER LA HORA/FECHA
-		##ADEMAS DEJARA EL MENSAJE EN LA INTERFAZ.
-		try:
-			for i in range(len(startD)):
-				startD[i] = int(startD[i])
-			for i in range(len(startT)):
-				startT[i] = int(startT[i])
-			startDATE = datetime(startD[2],startD[1],startD[0],startT[0],startT[1])
-			endDATE = datetimeArray[-1]
-			elapsed = endDATE-startDATE
-			return "Calculado: "+str(elapsed.seconds//60)
-		except ValueError or IndexError:
-			messagebox.showwarning("CUIDADO", "NO SE HA PODIDO LOCALIZAR LA HORA/FECHA. VERIFICAR PDF Y EXCEL")
-			return "NO HAY FECHA/HORA. COMPROBAR EXCEL/PDF"
 	def printIncidencia(self):
 		'''Genera la cadena de incidencia que será impresa en el excel.
 		Efectua esta operación leyendo el pdf y buscando la hora de creacion
@@ -415,7 +367,6 @@ class Aplicacion():
 		self.adjunto = open(initDIR+"\\"+fName, "rb")
 		#self.adjunto = filedialog.askopenfile(initialdir=initDIR, parent=self.raiz,mode='rb',title='Examinar...')
 		self.incNAME["text"] = self.adjunto.name.split("\\")[-1]
-		self.tiempoAPROX["text"] = self.calculateTIME()
 		self.checkEstacionNAME()
 	def sendIncidencia(self):
 		if self.adjunto == None:
