@@ -50,7 +50,7 @@ class DB:
 		self.fh = logging.FileHandler("app.log")
 		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 		self.fh.setFormatter(formatter)
-		self.log.setLevel(logging.INFO)
+		self.log.setLevel(logging.ERROR)
 		self.log.addHandler(self.fh)
 		##
 		self.estaciones = {}
