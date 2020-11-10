@@ -23,8 +23,7 @@ copyTOestefania=[]
 copyTOalberto=[]
 copyTOjavier=[]
 copyTOpatricia=[]
-		
-correoMARCOS = "marcos.rus@diamondseguridad.com"
+
 correoSALA = "cra@diamondseguridad.com"
 
 		

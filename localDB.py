@@ -24,9 +24,7 @@ class DB:
 			abonados[str(row[0])] = row 
 			row = curs.fetchone()
 			abCount = abCount +1
-		print("Numero de cuentas OIL: "+str(abCount))
-		#for ind,key in enumerate(abonados):
-			#print(abonados[key])
+		self.log.info("_getEstacionesSQL.- Numero de cuentas OIL: "+str(abCount))
 		return abonados
 	def _setEstaciones(self, dbType):
 		if dbType == "sql":
@@ -38,18 +36,23 @@ class DB:
 			abonados = self.cursor.fetchall()
 			for ab in abonados:
 				a = Estacion(ab)
-				#print(a.name+"-"+a.responsable+"-"+a.correo)
 				self.estaciones[a.name] = a
 	def _rewriteLocal(self):
 		self.cursor.execute("DELETE FROM estaciones")
 		self.lite.commit()
 		for ind, key in enumerate(self.estaciones):
-			#print(ind, key, self.estaciones[key])
 			sql = "INSERT INTO estaciones (nombre, responsable, correo) VALUES ('"+self.estaciones[key].name+"', '"+self.estaciones[key].responsable+"', '"+self.estaciones[key].correo+"')"
-			#print(sql)
 			self.cursor.execute(sql)
 			self.lite.commit()
 	def __init__(self):
+		'''LOGGER'''
+		self.log = logging.getLogger("DB")
+		self.fh = logging.FileHandler("app.log")
+		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+		self.fh.setFormatter(formatter)
+		self.log.setLevel(logging.INFO)
+		self.log.addHandler(self.fh)
+		##
 		self.estaciones = {}
 		self.lite = sqlite3.connect("DB.db")
 		self.cursor = self.lite.cursor()
@@ -63,12 +66,12 @@ class DB:
 			self.SQLdata = self._getEstacionesSQL(cursor)
 			self._setEstaciones("sql")
 			self._rewriteLocal()
-			print("SQLITE LOCAL ACTUALIZADO, UTILIZANDO LOCAL")
+			self.log.info("SQLITE LOCAL ACTUALIZADO, UTILIZANDO LOCAL")
 		except pyodbc.InterfaceError:
-			print("SQL DRIVER NO ENCONTRADO, FALLBACK TO SQLITE LOCAL")
+			self.log.error("SQL DRIVER NO ENCONTRADO, FALLBACK TO SQLITE LOCAL")
 			self._setEstaciones("lite")
 		except pyodbc.OperationalError:
-			print("SQL SERVER INALCANZABLE, FALLBACK TO SQLITE LOCAL")
+			self.log.error("SQL SERVER INALCANZABLE, FALLBACK TO SQLITE LOCAL")
 			self._setEstaciones("lite")
 
 
@@ -88,8 +91,6 @@ class Estacion:
 								halfLine = splitLine[1].split(" (")
 								self.responsable = halfLine[0].split(" ")[0]
 								self.correo = halfLine[1].split(") ")[0].lower()
-								#print(self.responsable)
-								#print(self.correo)
 				except AttributeError:
 					pass
 			
@@ -101,10 +102,8 @@ class Estacion:
 			if "9999" in fullname or "3709" in fullname or "INSTALANDO" in fullname:
 				self.name = fullname
 			else:
-				#print(fullname)
 				halfName = fullname.split(" - ")[1]
 				self.name = halfName.split(" (")[0]
-		#print(self.name)
 	def __init__(self, data):
 		self.data = data
 		self.name = ""

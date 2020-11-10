@@ -48,6 +48,7 @@ import re
 
 #Logging
 import logging
+logging.basicConfig(level=logging.INFO)
 
 #OS. Para lectura y movimiento de PDF dentro del sistema
 import os
@@ -71,6 +72,13 @@ class Aplicacion():
 	''' Clase monolitica que encapsula la interfaz y las funciones necesarias para su
 	correcto desarrollo.'''
 	def __init__(self):
+		'''Instancia LOGGER'''
+		self.log = logging.getLogger("APP")
+		self.fh = logging.FileHandler("app.log")
+		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+		self.fh.setFormatter(formatter)
+		self.log.setLevel(logging.INFO)
+		self.log.addHandler(self.fh)
 		''' Creación de la interfaz y todas sus variables asociadas'''
 		self.raiz = Tk()
 		self.raiz.geometry('') 		#La línea de geometría sin definir ningún tamaño hace que la interfaz sea autoadaptable.
@@ -176,6 +184,7 @@ class Aplicacion():
 		##INICIO DEL BUCLE PRINCIPAL##
 		#configActions.checkCopyFECHA()
 		self.raiz.after(2000, self.eraseIncMENU)
+		self.log.info("__init__.- Interfaz cargada")
 		self.raiz.mainloop()
 	def showCALL(self):
 		'''Esta función crea la interfaz necesaria para rellenar una incidencia en excel'''
@@ -230,24 +239,14 @@ class Aplicacion():
 		indName = self.adjunto.name.split("PLENOIL ")
 		realNAME = indName[-1][0:-4]
 		self.stationName = realNAME
-		print("Nombre extraido: "+realNAME)
+		self.log.debug("Nombre extraido: "+realNAME)
 		## Se comparan el nombre de la entrada y la incidencia.
 		try:
-			estaciones[realNAME]#Importante convertir a minusculas
-			print("Estación en el listado")
-			if self.stationName in copyTOestefania:
-				print("Mensaje en copia a ESTEFANIA")
-			elif self.stationName in copyTOalberto:
-				print("Mensaje en copia a ALBERTO")
-			elif self.stationName in copyTOjavier:
-				print("Mensaje en copia a JAVIER")
-			elif self.stationName in copyTOpatricia:
-				print("Mensaje en copia a PATRICIA")
-			else:
-				print("Mensaje SIN copia")
+			estaciones[realNAME]
+			self.log.info("checkEstacionNAME.- Estacion esta en la lista")
 			return True
 		except KeyError:
-			print("Estación no esta en el listado")
+			self.log.critical("checkEstacionNAME.- Estación no esta en el listado")
 			return False
 	def printIncidencia(self):
 		'''Genera la cadena de incidencia que será impresa en el excel.
@@ -284,10 +283,12 @@ class Aplicacion():
 			anulado = "NO"
 			numCHEQUE = "-"
 		##Devolucion de la incidencia
-		return[self.stationName.upper(),dPrint,tPrint
+		inc = [self.stationName.upper(),dPrint,tPrint
 			,self.DEllamadaVAR.get().upper(),inci, reso,self.solucionVAR.get().upper()
 			,self.tlfVAR.get().upper(),self.obsVAR.get().upper(),anulado,numCHEQUE
 			,self.tiempoVAR.get()]
+		self.log.info("printIncidencia.- "+inc)
+		return inc
 	def updateIncMENU(self):
 		self.incVAR.set("")
 		self.incNAME["text"] = ""
@@ -313,19 +314,19 @@ class Aplicacion():
 		
 		if self.stationName in copyTOestefania:
 			message['To'] = estaciones[self.stationName].correo+","+correoSALA+","+"estefania.ruiz@plenoil.es"
-			print("Mensaje en copia a ESTEFANIA")
+			self.log.info("SendMail.- Mensaje en copia a ESTEFANIA")
 		elif self.stationName in copyTOalberto:
 			message['To'] = estaciones[self.stationName].correo+","+correoSALA+","+"alberto.sanchez@plenoil.es"
-			print("Mensaje en copia a ESTEFANIA")
+			self.log.info("SendMail.- Mensaje en copia a ALBERTO")
 		elif self.stationName in copyTOjavier:
 			message['To'] = estaciones[self.stationName].correo+","+correoSALA+","+"javier.garcia@plenoil.es"
-			print("Mensaje en copia a ESTEFANIA")
+			self.log.info("SendMail.- Mensaje en copia a JAVIER")
 		elif self.stationName in copyTOpatricia:
 			message['To'] = estaciones[self.stationName].correo+","+correoSALA+","+"patricia.ferreiro@plenoil.es"
-			print("Mensaje en copia a PATRICIA")
+			self.log.info("SendMail.- Mensaje en copia a PATRICIA")
 		else:
 			message['To'] = estaciones[self.stationName].correo+","+correoSALA
-			print("Mensaje SIN copia")
+			self.log.info("SendMail.- Mensaje SIN copia")
 
 		text = MIMEText(name)
 		
@@ -338,10 +339,10 @@ class Aplicacion():
 		message.attach(attachedfile)
 		try:
 			server = smtplib.SMTP(senderCONFIG["server"], senderCONFIG["port"])
-			print("Conexion con Servidor correcta")
+			self.log.debug("sendMail.- Conexion con Servidor correcta")
 			#server.ehlo()
 			server.login(senderCONFIG["user"], senderCONFIG["pass"])
-			print("Login en servidor correcto")
+			self.log.debug("sendMail.- Login en servidor correcto")
 			if self.stationName in copyTOestefania:
 				server.sendmail(message['From'], [message['To'],correoSALA,"estefania.ruiz@plenoil.es"], message.as_string())
 			elif self.stationName in copyTOalberto:
@@ -352,11 +353,11 @@ class Aplicacion():
 				server.sendmail(message['From'], [message['To'],correoSALA,"patricia.ferreiro@plenoil.es"], message.as_string())
 			else:
 				server.sendmail(message['From'], [message['To'],correoSALA], message.as_string())
-			print('Email Enviado')			
+			self.log.info('sendMail.- Email Enviado')			
 			server.close()
-			print("Conexion con Servidor cerrada")
+			self.log.debug("sendMail.- Conexion con Servidor cerrada")
 		except:
-			print('Algo ha ocurrido. EMAIL NO ENVIADO')
+			self.log.error('sendMail.- Algo ha ocurrido. EMAIL NO ENVIADO')
 			messagebox.showerror("ERROR","NO SE HA ENVIADO EL EMAIL")
 	def adjuntar(self, fName):
 		'''Proceso básico que une todas las funciones anteriores. Hace todas
@@ -364,18 +365,16 @@ class Aplicacion():
 		escribe donde corresponde y se envia a quien corresponde.'''
 		initDIR = "\\\\192.168.102.5\\t. de noche\\PLENOIL INCIDENCIA"
 		self.adjunto = open(initDIR+"\\"+fName, "rb")
-		#self.adjunto = filedialog.askopenfile(initialdir=initDIR, parent=self.raiz,mode='rb',title='Examinar...')
 		self.incNAME["text"] = self.adjunto.name.split("\\")[-1]
 		self.checkEstacionNAME()
 	def sendIncidencia(self):
 		if self.adjunto == None:
+			self.log.error("sendIncidencia.- No hay incidencia adjunta")
 			messagebox.showerror("ERROR","NO HAY INCIDENCIA ADJUNTA")
 		else:
-			#print(adjunto.name)
 			if self.status == True:
 				if self.checkEstacionNAME() == True:
-					print(self.printIncidencia())
-					print("Incidencia Coincide con Estaciones")
+					self.log.info("sendIncidencia.- Incidencia Coincide con Estaciones")
 					row = self.printIncidencia()
 					coord = estaciones[self.stationName].responsable.lower()
 					worksheet = excelSHEETS[coord]
@@ -390,22 +389,24 @@ class Aplicacion():
 						self.updateIncMENU()
 						if self.stationName in copyTOestefania:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-												+estaciones[self.stationName].correo+ ",estefania.ruiz@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+												+estaciones[self.stationName].correo+ ",estefania.ruiz@plenoil.es,  Y "+correoSALA)
 						elif self.stationName in copyTOalberto:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-												+estaciones[self.stationName].correo+ ",alberto.sanchez@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+												+estaciones[self.stationName].correo+ ",alberto.sanchez@plenoil.es, Y "+correoSALA)
 						elif self.stationName in copyTOjavier:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-												+estaciones[self.stationName].correo+ ",javier.garcia@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+												+estaciones[self.stationName].correo+ ",javier.garcia@plenoil.es, Y "+correoSALA)
 						elif self.stationName in copyTOpatricia:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-												+estaciones[self.stationName].correo+ ",patricia.ferreiro@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+												+estaciones[self.stationName].correo+ ",patricia.ferreiro@plenoil.es, Y "+correoSALA)
 						else:
 							messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-												+estaciones[self.stationName].correo+", "+correoMARCOS+" Y "+correoSALA)
+												+estaciones[self.stationName].correo+", Y "+correoSALA)
 					except PermissionError:
+						self.log.critical("sendIncidencia.- Excel Abierto")
 						messagebox.showerror("ERROR","EXCEL ABIERTO. CIERRA EXCEL Y REINICIA LA APLICACION")
 				else:
+					self.log.error("sendIncidencia.- Estacion no esta en la lista")
 					messagebox.showerror("ERROR","NOMBRE DE LA ESTACION NO ESTA EN LISTA")
 			elif self.status == False:
 				if self.checkEstacionNAME() == True:
@@ -415,21 +416,23 @@ class Aplicacion():
 					self.updateIncMENU()
 					coord = estaciones[self.stationName].responsable.lower()
 					if self.stationName in copyTOestefania:
-						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-											+estaciones[self.stationName].correo+ ",estefania.ruiz@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+						messagebox.showinfo("INCIDENCIA CORRECTA",". ENVIADO A "
+											+estaciones[self.stationName].correo+ ",estefania.ruiz@plenoil.es, Y "+correoSALA)
 					elif self.stationName in copyTOalberto:
-						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-											+estaciones[self.stationName].correo+ ",alberto.sanchez@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+						messagebox.showinfo("INCIDENCIA CORRECTA",". ENVIADO A "
+											+estaciones[self.stationName].correo+ ",alberto.sanchez@plenoil.es, Y "+correoSALA)
 					elif self.stationName in copyTOjavier:
-						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-											+estaciones[self.stationName].correo+ ",javier.garcia@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+						messagebox.showinfo("INCIDENCIA CORRECTA",". ENVIADO A "
+											+estaciones[self.stationName].correo+ ",javier.garcia@plenoil.es, Y "+correoSALA)
 					elif self.stationName in copyTOpatricia:
-						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-											+estaciones[self.stationName].correo+ ",patricia.ferreiro@plenoil.es, "+correoMARCOS+" Y "+correoSALA)
+						messagebox.showinfo("INCIDENCIA CORRECTA",". ENVIADO A "
+											+estaciones[self.stationName].correo+ ",patricia.ferreiro@plenoil.es, Y "+correoSALA)
 					else:
-						messagebox.showinfo("INCIDENCIA CORRECTA","AÑADIDO AL REGISTRO. ENVIADO A "
-											+estaciones[self.stationName].correo+", "+correoMARCOS+" Y "+correoSALA)
+						messagebox.showinfo("INCIDENCIA CORRECTA",". ENVIADO A "
+											+estaciones[self.stationName].correo+", Y "+correoSALA)
+					self.log.info("sendIncidencia.- Enviada correctamente.")
 				else:
+					self.log.error("sendIncidencia.- Estacion no esta en la lista")
 					messagebox.showerror("ERROR","NOMBRE DE LA ESTACION NO ESTA EN LISTA")
 		
 
