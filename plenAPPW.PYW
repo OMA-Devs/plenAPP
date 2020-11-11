@@ -287,7 +287,7 @@ class Aplicacion():
 			,self.DEllamadaVAR.get().upper(),inci, reso,self.solucionVAR.get().upper()
 			,self.tlfVAR.get().upper(),self.obsVAR.get().upper(),anulado,numCHEQUE
 			,self.tiempoVAR.get()]
-		self.log.info("printIncidencia.- "+inc)
+		#self.log.info("printIncidencia.- "+inc)
 		return inc
 	def updateIncMENU(self):
 		self.incVAR.set("")
