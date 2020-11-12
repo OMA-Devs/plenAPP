@@ -13,18 +13,17 @@ file_data = parser.from_file("CRUNCHER\\ALL.pdf")
 text = file_data['content']
 textARR = text.split("\n")
 
-def checkLOG(line):
-	##10/11/20 06:39:39.263
-	if len(re.findall(r'\d\d/\d\d/\d\d \d\d:\d\d:\d\d.\d\d\d',line)) > 0:
-		return True
-	else:
-		return False
-
 class Evento:
 	def __init__(self, data):
 		self.data = [data]
 		self.titulo = ""
 		self.observaciones = []
+	def checkLOG(self, line):
+		##10/11/20 06:39:39.263
+		if len(re.findall(r'\d\d/\d\d/\d\d \d\d:\d\d:\d\d.\d\d\d',line)) > 0:
+			return True
+		else:
+			return False
 	def checkOBS(self, line):
 		if len(line) > 0:
 			if line[0] == "[":
@@ -54,7 +53,11 @@ class Evento:
 			except IndexError:
 				self.observaciones.append(OBS)
 				OBS = ""
-		
+	def parseLOG(self): ####EN CONSTRUCCION
+		LOG = []
+		for ind, obs in enumerate(self.observaciones):
+			if self.checkLOG(obs) == True:
+				LOG.append(obs)
 
 class Informe:
 	def __init__(self, data):
@@ -93,30 +96,51 @@ class Informe:
 		for item in self.eventos:
 			item._setATT()
 			item.parseOBS()
+			item.parseLOG()
+
+def colorFormatter(name):
+	base  = "<h3 class= 'w3-leftbar w3-border-bottom"
+	fmt = ""
+	if "RONDA VIRTUAL DE VIDEO" in name or "Test" in name:
+		fmt = " w3-border-light-grey"
+	elif "EVENTO INTERFONO" in name or "GENERADO" in name:
+		fmt = " w3-border-purple"
+	elif "401R" in name or "456E" in name: ##ARMADO #cdb796
+		fmt = " w3-border-brown"
+	elif "401E" in name or "406E" in name: ##DESARMADO  #338cf9
+		fmt = " w3-border-indigo"
+	elif "130E" in name or "150E" in name: ##Alarma robo #ff80c0
+		fmt = " w3-border-pink"
+	elif "130R" in name or "150R" in name or "552R" in name: ##Restauraciones #33cccc
+		fmt = " w3-border-teal"
+	elif "570E" in name: #ANULADO #c0c0c0
+		fmt = " w3-border-grey"
+	elif "Apertura" in name: #apertura fuera çde horario. #338CF9
+		fmt = " w3-border-indigo"
+	elif "552E" in name: ##Fallo de comunicacion #00ff80
+		fmt = " w3-border-light-green"
+	elif "BIDIRECCIONAL" in name: #Perdida de alimentacion. Bidireccional, Fallo de bateria #ffff99
+ 		fmt = " w3-border-yellow"
+	return base+fmt+"'>"
 
 def HTMLwriter(informe):
 	f = open(DIR+informe.nombre+".html", "w", encoding="utf-8")
-	f.write('''<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-
-  <title></title>
-
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-
-</head>
-
-<body>''')
+	f.write('''<!doctype html><html lang="en">
+		<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+		</head>
+		<body class='w3-content' style='width: 75%'>''')
 	f.write("<h1>"+informe.nombre+"</h1>")
 	f.write("<h2>"+informe.direccion+"</h2>")
 	for item in informe.eventos:
-		f.write("<div class='w3-container w3-border'>")
-		f.write(item.titulo)
+		f.write("<div class='w3-container'>")
+		f.write(colorFormatter(item.titulo)+item.titulo+"</h3>")
 		if len(item.observaciones) > 0:
 			f.write("<div class='w3-container w3-border'>")
 			for obs in item.observaciones:
-				f.write(obs)
+				f.write("<p>"+obs+"</p>")
 			f.write("</div>")
 		f.write("</div>")
 	f.write("</body></html>")
@@ -136,7 +160,7 @@ for ind, line in enumerate(textARR):
 					pass
 				elif "Observación" in line:
 					pass
-				elif "andres@cra.es" in line:
+				elif "@cra.es" in line:
 					pass
 				elif "Scheduler" in line:
 					pass
@@ -146,4 +170,13 @@ for ind, line in enumerate(textARR):
 for informe in informes:
 	informe.structure()
 	HTMLwriter(informe)
+
+'''huercal = None
+for informe in informes:
+	if "HUERCAL" in informe.nombre:
+		huercal = informe
+
+for evento in huercal.eventos:
+	print("-------")
+	print(evento.titulo)'''
 
