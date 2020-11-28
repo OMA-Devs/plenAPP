@@ -86,20 +86,23 @@ def informePARSER(fName):
 			name = "T0"+str(i)
 		else:
 			name = "T"+str(i)
-		final.create_sheet(name)
-		for row in target[name].rows:
-			for cell in row:
-				new_cell = final[name].cell(row=cell.row, column=cell.col_idx, value= cell.value)
-				if cell.has_style:
-					new_cell.font = copy(cell.font)
-					new_cell.border = copy(cell.border)
-					new_cell.fill = copy(cell.fill)
-					new_cell.number_format = copy(cell.number_format)
-					new_cell.protection = copy(cell.protection)
-					new_cell.alignment = copy(cell.alignment)
-					new_cell.font = copy(cell.font)
-		final[name].column_dimensions["A"].width = 40
-		final[name].column_dimensions["B"].width = 40
+		try:
+			final.create_sheet(name)
+			for row in target[name].rows:
+				for cell in row:
+					new_cell = final[name].cell(row=cell.row, column=cell.col_idx, value= cell.value)
+					if cell.has_style:
+						new_cell.font = copy(cell.font)
+						new_cell.border = copy(cell.border)
+						new_cell.fill = copy(cell.fill)
+						new_cell.number_format = copy(cell.number_format)
+						new_cell.protection = copy(cell.protection)
+						new_cell.alignment = copy(cell.alignment)
+						new_cell.font = copy(cell.font)
+			final[name].column_dimensions["A"].width = 40
+			final[name].column_dimensions["B"].width = 40
+		except KeyError:
+			pass
 	final.remove(final["Sheet"])
 	try:
 		os.remove(path+fName+".xlsx")

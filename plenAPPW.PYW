@@ -261,10 +261,11 @@ class Aplicacion():
 		dPrint = ""
 		for line in text.split("\n"):
 			if line is not "":
+				print(line)
 				if tPrint == "":
 					hora = re.search(r'\d\d:\d\d:\d\d',line)
 					try:
-						tPrint = hora.group()[:-3]
+						tPrint = hora.group()#[:-3]
 					except AttributeError:
 						pass
 				if dPrint == "":
@@ -287,7 +288,7 @@ class Aplicacion():
 			,self.DEllamadaVAR.get().upper(),inci, reso,self.solucionVAR.get().upper()
 			,self.tlfVAR.get().upper(),self.obsVAR.get().upper(),anulado,numCHEQUE
 			,self.tiempoVAR.get()]
-		#self.log.info("printIncidencia.- "+inc)
+		self.log.info("printIncidencia.- "+str(inc))
 		return inc
 	def updateIncMENU(self):
 		self.incVAR.set("")
