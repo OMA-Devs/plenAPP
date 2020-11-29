@@ -1,6 +1,9 @@
 #Logging
 import logging
 
+#Datetime
+from datetime import datetime
+
 #SQLITE FALLBACK
 import sqlite3
 
@@ -74,6 +77,27 @@ class DB:
 			self.log.error("SQL SERVER INALCANZABLE, FALLBACK TO SQLITE LOCAL")
 			self._setEstaciones("lite")
 
+class incDB:
+	def __init__(self):
+		'''LOGGER'''
+		self.log = logging.getLogger("incDB")
+		self.fh = logging.FileHandler("app.log")
+		formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+		self.fh.setFormatter(formatter)
+		self.log.setLevel(logging.ERROR)
+		self.log.addHandler(self.fh)
+		##
+		self.month = datetime.now().month
+		self.lite = sqlite3.connect("INCIDENCIAS.db")
+		self.cursor = self.lite.cursor()
+	def insertINC(self, task):
+		sql = ''' INSERT INTO "'''+str(self.month)+'''"(estacion,fecha,hora,llamadaDe,incidencia,resolucion,solucionado,telefonoGuardia,diamond,anulado,nCheque,tiempoResolucion)
+			VALUES(?,?,?,?,?,?,?,?,?,?,?,?) '''
+		self.cursor.execute(sql, task)
+		self.lite.commit()
+
+class Incidencia:
+	pass
 
 class Estacion:
 	def setResponsableMail(self):
@@ -118,3 +142,6 @@ if __name__ == "__main__":
 	#print(db.estaciones)
 	for ind, key in enumerate(db.estaciones):
 		print(db.estaciones[key].name+"-"+db.estaciones[key].responsable+"-"+db.estaciones[key].correo)
+	inc = incDB()
+	sqlPRUEBA = ("ELCHE","11/11/11","00:00:00","expendedor","cheque no impreso","apertura manual","si","no","OBSERVACION","-",0,5)
+	inc.insertINC(sqlPRUEBA)

@@ -23,7 +23,7 @@ from tkinter import ttk
 
 #Archivos de configuracion y modulos personalizados.
 from configuraciones import *
-from localDB import DB
+from localDB import DB, incDB
 
 #Utilizado solo para mostrar los logos.
 from PIL import Image, ImageTk
@@ -67,6 +67,7 @@ def moveFile(fName):
 
 
 estaciones = DB().estaciones
+incDB = incDB()
 
 class Aplicacion():
 	''' Clase monolitica que encapsula la interfaz y las funciones necesarias para su
@@ -385,7 +386,9 @@ class Aplicacion():
 						ws.append(row)
 						wb.save(excelNAME)
 						self.sendMail()
+						incTUP = (row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],row[9],row[10],row[11])
 						self.adjunto.close()
+						incDB.insertINC(incTUP)
 						moveFile(self.adjunto.name.split("\\")[-1])
 						self.updateIncMENU()
 						if self.stationName in copyTOestefania:
